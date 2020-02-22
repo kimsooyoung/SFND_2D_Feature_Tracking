@@ -58,11 +58,14 @@ int main(int argc, const char *argv[])
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.1 -> replace the following code with ring buffer of size dataBufferSize
+        
 
         // push image into data frame buffer
         DataFrame frame;
         frame.cameraImg = imgGray;
         dataBuffer.push_back(frame);
+        if( dataBuffer.size() > dataBufferSize )
+            dataBuffer.erase(dataBuffer.begin());
 
         //// EOF STUDENT ASSIGNMENT
         cout << "#1 : LOAD IMAGE INTO BUFFER done" << endl;
@@ -71,19 +74,18 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "SHITOMASI";
+        string detectorType = "AKAZE";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
-        if (detectorType.compare("SHITOMASI") == 0)
-        {
+        if (detectorType.compare("SHITOMASI") == 0){
             detKeypointsShiTomasi(keypoints, imgGray, false);
-        }
-        else
-        {
-            //...
+        }else if ( detectorType.compare("HARRIS") == 0 ) {
+            detKeypointsHarris(keypoints, imgGray, false);
+        }else {
+            detKeypointsModern(keypoints, imgGray, detectorType, false);
         }
         //// EOF STUDENT ASSIGNMENT
 
@@ -95,13 +97,17 @@ int main(int argc, const char *argv[])
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
-            // ...
+            for (auto i = 0; i < keypoints.size(); i++){
+                if( !vehicleRect.contains(  cv::Point(keypoints[i].pt)))
+                    keypoints.erase(keypoints.begin() + i);
+            }
+            cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
         }
 
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
-        bool bLimitKpts = false;
+        bool bLimitKpts = true;
         if (bLimitKpts)
         {
             int maxKeypoints = 50;
