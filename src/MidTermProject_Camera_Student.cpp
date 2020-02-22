@@ -95,14 +95,21 @@ int main(int argc, const char *argv[])
         // only keep keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150);
-        if (bFocusOnVehicle)
-        {
-            for (auto i = 0; i < keypoints.size(); i++){
-                if( !vehicleRect.contains(  cv::Point(keypoints[i].pt)))
+        if (bFocusOnVehicle){
+            // caution !! If erase element from vector, all the elements behind to erased element pulled one by one
+            for (int i = keypoints.size(); i != 0; i--){
+                // cout << i << endl;
+                if( !vehicleRect.contains( keypoints[i].pt ) )
                     keypoints.erase(keypoints.begin() + i);
             }
-            cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
+            // cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
         }
+        // string windowName = "Debug Window";
+        // cv::namedWindow(windowName, 5);
+        // cv::Mat visImage = imgGray.clone();
+        // cv::drawKeypoints(imgGray, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        // cv::imshow(windowName, visImage);
+        // cv::waitKey(0);
 
         //// EOF STUDENT ASSIGNMENT
 
