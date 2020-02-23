@@ -23,6 +23,7 @@ int main(int argc, const char *argv[])
 {
 
     /* INIT VARIABLES AND DATA STRUCTURES */
+    string detectorType = "SIFT"; // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
     // data location
     string dataPath = "../";
@@ -74,7 +75,7 @@ int main(int argc, const char *argv[])
 
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
-        string detectorType = "AKAZE";
+        // string detectorType = "AKAZE";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
@@ -102,7 +103,7 @@ int main(int argc, const char *argv[])
                 if( !vehicleRect.contains( keypoints[i].pt ) )
                     keypoints.erase(keypoints.begin() + i);
             }
-            // cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
+            cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
         }
         // string windowName = "Debug Window";
         // cv::namedWindow(windowName, 5);
@@ -153,7 +154,7 @@ int main(int argc, const char *argv[])
             /* MATCH KEYPOINT DESCRIPTORS */
 
             vector<cv::DMatch> matches;
-            string matcherType = "MAT_FLANN";        // MAT_BF, MAT_FLANN
+            string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
             string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
 
