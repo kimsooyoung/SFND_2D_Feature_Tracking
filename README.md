@@ -38,7 +38,7 @@ See the classroom instruction and code comments for more details on each of thes
 Final goal in this project is to find `keypoints` in every images, and also need to express them in a unique way.
 It is called `descriptor`. Lastly, If there's overlap between images, we can match `descriptors` that belong to same object.
 
-1. Set up the loading procedure for the images
+### 1. Set up the loading procedure for the images
 In order to match `descriptors` between images, we need to hold at least 2 images in our data-structure
 If `descriptor` match is done, we should get a new image and do the same process to them.
 In this process, We do not have to hold the previous image on our data-structure.
@@ -55,7 +55,7 @@ if( dataBuffer.size() > dataBufferSize )
     dataBuffer.erase(dataBuffer.begin());
 ```
 
-2. Implement a various bunch of detectors, which are Shi-Tomasi, HARRIS, FAST, BRISK, ORB, AKAZE, and SIFT method.
+### 2. Implement a various bunch of detectors, which are Shi-Tomasi, HARRIS, FAST, BRISK, ORB, AKAZE, and SIFT method.
 
 ```c++
 void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool bVis){
@@ -168,9 +168,11 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
 }
 ```
 
-3. Remove all keypoints outside of a bounding box around the preceding vehicle. Box parameters you should use are : cx = 535, cy = 180, w = 180, h = 150.
+### 3. Remove all keypoints outside of a bounding box around the preceding vehicle. Box parameters you should use are : cx = 535, cy = 180, w = 180, h = 150.
 
 This job can be done by using `cv::Rect` function & `cv::Rect -> contains`
+Caution!! When the element is erased, vector automatically pull the latter elements. :(
+That's the reason I implement for-loop in this way. 
 
 ```c++
         bool bFocusOnVehicle = true;
@@ -185,3 +187,101 @@ This job can be done by using `cv::Rect` function & `cv::Rect -> contains`
             cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
         }
 ```
+
+### 4. Implement a variety of keypoint descriptors, which are BRISK, BRIEF, ORB, FREAK, AKAZE and SIFT method.
+
+```c++
+void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descriptors, string descriptorType)
+{
+    // select appropriate descriptor
+    cv::Ptr<cv::DescriptorExtractor> extractor;
+    if (descriptorType.compare("BRISK") == 0)
+    {
+        int threshold = 30;        // FAST/AGAST detection threshold score.
+        int octaves = 3;           // detection octaves (use 0 to do single scale)
+        float patternScale = 1.0f; // apply this scale to the pattern used for sampling the neighbourhood of a keypoint.
+
+        extractor = cv::BRISK::create(threshold, octaves, patternScale);
+    }else if(descriptorType.compare("BRIEF") == 0){
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
+    }else if(descriptorType.compare("ORB") == 0){
+        extractor = cv::ORB::create();
+    }else if(descriptorType.compare("FREAK") == 0){
+        extractor = cv::xfeatures2d::FREAK::create();
+    }else if(descriptorType.compare("AKAZE") == 0){
+        extractor = cv::AKAZE::create();
+    }else if(descriptorType.compare("SIFT") == 0){
+        extractor = cv::xfeatures2d::SIFT::create();
+    }
+
+    // perform feature description
+    double t = (double)cv::getTickCount();
+    extractor->compute(img, keypoints, descriptors);
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << descriptorType << " descriptor extraction in " << 1000 * t / 1.0 << " ms" << endl;
+}
+```
+
+### 5. Implemente matching algorithms, Brute Force matching combined with Nearest-Neighbor selection, FLANN as an alternative to brute-force as well as the K-Nearest-Neighbor approach.
+
+### 6. Implement the descriptor distance ratio test as a filtering method to remove bad keypoint matches.
+Q: Why using Distance Ratio? 
+A: ![Screenshot from 2020-02-24 15-54-11](https://user-images.githubusercontent.com/12381733/75133391-eec86500-571d-11ea-950f-016a28be57a5.png)
+Imagine such case, There's few similar patterns in image, Distacne Ratio extract the distace between best 2 features in consecutive image, and we can provide the mismatch by using descriptor + distance ration combination.
+
+```c++
+void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
+                      std::vector<cv::DMatch> &matches, std::string descriptorType, std::string matcherType, std::string selectorType)
+{
+    // configure matcher
+    bool crossCheck = false;
+    cv::Ptr<cv::DescriptorMatcher> matcher;
+
+    if (matcherType.compare("MAT_BF") == 0){
+        int normType = cv::NORM_HAMMING;
+        matcher = cv::BFMatcher::create(normType, crossCheck);
+    }
+    else if (matcherType.compare("MAT_FLANN") == 0){
+        if ( (descSource.type() != CV_32F) || (descRef.type() != CV_32F) ){ // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
+            descSource.convertTo(descSource, CV_32F);
+            descRef.convertTo(descRef, CV_32F);
+        }
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+    }
+
+    // perform matching task
+    if (selectorType.compare("SEL_NN") == 0)
+    { // nearest neighbor (best match)
+
+        matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
+    }
+    else if (selectorType.compare("SEL_KNN") == 0)  
+    { // k nearest neighbors (k=2)
+        vector<vector<cv::DMatch>> knn_matches;
+        matcher->knnMatch(descSource, descRef, knn_matches, 2); // finds the 2 best matches
+
+        double minDescDistRatio = 0.8;
+        for (auto it = knn_matches.begin(); it != knn_matches.end(); ++it){
+            if ((*it)[0].distance < minDescDistRatio * (*it)[1].distance){
+                matches.push_back((*it)[0]);
+            }
+        }
+    }
+}
+```
+
+### 7. Count the number of keypoints on the preceding vehicle for all 10 images and take note of the distribution of their neighborhood size.
+
+### 8. Count the number of matched keypoints for all 10 images using all possible combinations of detectors and descriptors. In the matching step, use the BF approach with the descriptor distance ratio set to 0.8.
+
+### 9. Log the time it takes for keypoint detection and descriptor extraction
+
+Here's [Google Spread Sheet link](https://docs.google.com/spreadsheets/d/1H2qoxqAklakkGRWDTFXGNOmsREILkXQJLmi7ttRISDM/edit?usp=sharing) for those Tasks
+
+![Screenshot from 2020-02-24 16-01-09](https://user-images.githubusercontent.com/12381733/75133646-e58bc800-571e-11ea-894b-bb14bd537dcd.png)
+
+According to this report, 
+1. FAST + BRIEF
+2. ORB + BRIEF
+3. BRIEF + BRISK
+combination looks best among them.
