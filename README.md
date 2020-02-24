@@ -32,3 +32,15 @@ See the classroom instruction and code comments for more details on each of thes
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
 4. Run it: `./2D_feature_tracking`.
+
+## Project-overview
+
+1. Set up the loading procedure for the images
+
+```c++
+        DataFrame frame;
+        frame.cameraImg = imgGray;
+        dataBuffer.push_back(frame);
+        if( dataBuffer.size() > dataBufferSize )
+            dataBuffer.erase(dataBuffer.begin());
+```
