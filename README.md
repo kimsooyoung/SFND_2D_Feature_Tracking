@@ -287,3 +287,10 @@ According to this report,
 2. ORB + BRIEF
 3. BRIEF + BRISK
 combination looks best among them.
+
+> When Did the Harris Corner Detection, I used non-maximum-suppression, It took too much time, If I don't use that.
+
+> And also when I'm using  FAST, I used default option (default constructor), But It seems like there's few number of parameters(options ex- non-maximal suppression / threshold) can make it more profitable.
+
+### Todo 
+try to explore more options and find best of best combination :)
