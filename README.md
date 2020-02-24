@@ -167,3 +167,21 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
 
 }
 ```
+
+3. Remove all keypoints outside of a bounding box around the preceding vehicle. Box parameters you should use are : cx = 535, cy = 180, w = 180, h = 150.
+
+This job can be done by using `cv::Rect` function & `cv::Rect -> contains`
+
+```c++
+        bool bFocusOnVehicle = true;
+        cv::Rect vehicleRect(535, 180, 180, 150);
+        if (bFocusOnVehicle){
+            // caution !! If erase element from vector, all the elements behind to erased element pulled one by one
+            for (int i = keypoints.size(); i != 0; i--){
+                // cout << i << endl;
+                if( !vehicleRect.contains( keypoints[i].pt ) )
+                    keypoints.erase(keypoints.begin() + i);
+            }
+            cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
+        }
+```
