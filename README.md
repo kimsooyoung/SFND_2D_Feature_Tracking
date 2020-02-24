@@ -227,6 +227,7 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
 ### 6. Implement the descriptor distance ratio test as a filtering method to remove bad keypoint matches.
 Q: Why using Distance Ratio? 
 A: ![Screenshot from 2020-02-24 15-54-11](https://user-images.githubusercontent.com/12381733/75133391-eec86500-571d-11ea-950f-016a28be57a5.png)
+
 Imagine such case, There's few similar patterns in image, Distacne Ratio extract the distace between best 2 features in consecutive image, and we can provide the mismatch by using descriptor + distance ration combination.
 
 ```c++
