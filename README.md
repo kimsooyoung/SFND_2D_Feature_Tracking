@@ -282,11 +282,12 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
 }
 ```
 
-### 7. Count the number of keypoints on the preceding vehicle for all 10 images and take note of the distribution of their neighborhood size.
+### Task 7-9 
+* Count the number of keypoints on the preceding vehicle for all 10 images and take note of the distribution of their neighborhood size.
 
-### 8. Count the number of matched keypoints for all 10 images using all possible combinations of detectors and descriptors. In the matching step, use the BF approach with the descriptor distance ratio set to 0.8.
+* Count the number of matched keypoints for all 10 images using all possible combinations of detectors and descriptors. In the matching step, use the BF approach with the descriptor distance ratio set to 0.8.
 
-### 9. Log the time it takes for keypoint detection and descriptor extraction
+* Log the time it takes for keypoint detection and descriptor extraction
 
 Here's [Google Spread Sheet link](https://docs.google.com/spreadsheets/d/1H2qoxqAklakkGRWDTFXGNOmsREILkXQJLmi7ttRISDM/edit?usp=sharing) for those Tasks
 
