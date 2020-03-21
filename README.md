@@ -224,6 +224,16 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
 
 ### 5. Implemente matching algorithms, Brute Force matching combined with Nearest-Neighbor selection, FLANN as an alternative to brute-force as well as the K-Nearest-Neighbor approach.
 
+```c++
+if (matcherType.compare("MAT_FLANN") == 0){
+        if ( (descSource.type() != CV_32F) || (descRef.type() != CV_32F) ){ // OpenCV bug workaround : convert binary descriptors to floating point due to a bug in current OpenCV implementation
+            descSource.convertTo(descSource, CV_32F);
+            descRef.convertTo(descRef, CV_32F);
+        }
+        matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+    }
+```
+
 ### 6. Implement the descriptor distance ratio test as a filtering method to remove bad keypoint matches.
 Q: Why using Distance Ratio? 
 
