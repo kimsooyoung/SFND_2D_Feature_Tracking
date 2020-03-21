@@ -1,5 +1,9 @@
 # SFND 2D Feature Tracking
 
+### Project Status:
+
+![issue_badge](https://img.shields.io/badge/build-Passing-green) ![issue_badge](https://img.shields.io/badge/UdacityRubric-Passing-green)
+
 <img src="images/keypoints.png" width="820" height="248" />
 
 The idea of the camera course is to build a collision detection system - that's the overall goal for the Final Project. As a preparation for this, you will now build the feature tracking part and test various detector / descriptor combinations to see which ones perform best. This mid-term project consists of four parts:
