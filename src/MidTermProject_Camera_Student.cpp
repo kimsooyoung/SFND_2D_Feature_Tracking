@@ -24,7 +24,7 @@ int main(int argc, const char *argv[])
 
     /* INIT VARIABLES AND DATA STRUCTURES */
     string detectorType = "SHITOMASI"; // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
-    string descriptorType = "BRISK"; // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
+    string descriptorType = "BRISK";   // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
     // data location
     string dataPath = "../";
@@ -60,13 +60,12 @@ int main(int argc, const char *argv[])
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.1 -> replace the following code with ring buffer of size dataBufferSize
-        
 
         // push image into data frame buffer
         DataFrame frame;
         frame.cameraImg = imgGray;
         dataBuffer.push_back(frame);
-        if( dataBuffer.size() > dataBufferSize )
+        if (dataBuffer.size() > dataBufferSize)
             dataBuffer.erase(dataBuffer.begin());
 
         //// EOF STUDENT ASSIGNMENT
@@ -82,11 +81,16 @@ int main(int argc, const char *argv[])
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
         //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
-        if (detectorType.compare("SHITOMASI") == 0){
+        if (detectorType.compare("SHITOMASI") == 0)
+        {
             detKeypointsShiTomasi(keypoints, imgGray, false);
-        }else if ( detectorType.compare("HARRIS") == 0 ) {
+        }
+        else if (detectorType.compare("HARRIS") == 0)
+        {
             detKeypointsHarris(keypoints, imgGray, false);
-        }else {
+        }
+        else
+        {
             detKeypointsModern(keypoints, imgGray, detectorType, false);
         }
         //// EOF STUDENT ASSIGNMENT
@@ -97,11 +101,13 @@ int main(int argc, const char *argv[])
         // only keep keypoints on the preceding vehicle
         bool bFocusOnVehicle = true;
         cv::Rect vehicleRect(535, 180, 180, 150);
-        if (bFocusOnVehicle){
+        if (bFocusOnVehicle)
+        {
             // caution !! If erase element from vector, all the elements behind to erased element pulled one by one
-            for (int i = keypoints.size(); i != 0; i--){
+            for (int i = keypoints.size(); i != 0; i--)
+            {
                 // cout << i << endl;
-                if( !vehicleRect.contains( keypoints[i].pt ) )
+                if (!vehicleRect.contains(keypoints[i].pt))
                     keypoints.erase(keypoints.begin() + i);
             }
             cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
@@ -157,7 +163,7 @@ int main(int argc, const char *argv[])
             vector<cv::DMatch> matches;
             string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
             string descriptorType = "DES_BINARY"; // DES_BINARY, DES_HOG
-            string selectorType = "SEL_KNN";       // SEL_NN, SEL_KNN
+            string selectorType = "SEL_KNN";      // SEL_NN, SEL_KNN
 
             //// STUDENT ASSIGNMENT
             //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
