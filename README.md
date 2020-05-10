@@ -38,7 +38,7 @@ See the classroom instruction and code comments for more details on each of thes
 3. Compile: `cmake .. && make`
 4. Run it: `./2D_feature_tracking`.
 
-===
+---
 
 ## Project-overview
 
