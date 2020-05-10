@@ -178,23 +178,23 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
 
 ### 3. Remove all keypoints outside of a bounding box around the preceding vehicle. Box parameters you should use are : cx = 535, cy = 180, w = 180, h = 150.
 
-This job can be done by using `cv::Rect` function & `cv::Rect -> contains`
-
-> Caution!! When the element is erased, vector **automatically pull** the latter elements. :(
-> That's the reason I implement for-loop in this way.
+This job can be done by using `contains()` funciton in cv::Rect class
 
 ```c++
-        bool bFocusOnVehicle = true;
-        cv::Rect vehicleRect(535, 180, 180, 150);
-        if (bFocusOnVehicle){
-            // caution !! If erase element from vector, all the elements behind to erased element pulled one by one
-            for (int i = keypoints.size(); i != 0; i--){
-                // cout << i << endl;
-                if( !vehicleRect.contains( keypoints[i].pt ) )
-                    keypoints.erase(keypoints.begin() + i);
-            }
-            cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
+    // only keep keypoints on the preceding vehicle
+    bool bFocusOnVehicle = true;
+    cv::Rect vehicleRect(535, 180, 180, 150);
+    if (bFocusOnVehicle)
+    {
+        vector<cv::KeyPoint> filteredKeypoints;
+        for (auto kp : keypoints)
+        {
+            if (vehicleRect.contains(kp.pt))
+                filteredKeypoints.push_back(kp);
         }
+        keypoints = filteredKeypoints;
+        cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
+    }
 ```
 
 ### 4. Implement a variety of keypoint descriptors, which are BRISK, BRIEF, ORB, FREAK, AKAZE and SIFT method.

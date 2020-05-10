@@ -26,6 +26,9 @@ int main(int argc, const char *argv[])
     string detectorType = "SHITOMASI"; // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
     string descriptorType = "BRISK";   // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
 
+    bool bVis = true;        // visualize results
+    bool bLimitKpts = false; // limit of keypoints
+
     // data location
     string dataPath = "../";
 
@@ -40,7 +43,6 @@ int main(int argc, const char *argv[])
     // misc
     int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
     vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
-    bool bVis = false;            // visualize results
 
     /* MAIN LOOP OVER ALL IMAGES */
 
@@ -83,15 +85,15 @@ int main(int argc, const char *argv[])
 
         if (detectorType.compare("SHITOMASI") == 0)
         {
-            detKeypointsShiTomasi(keypoints, imgGray, false);
+            detKeypointsShiTomasi(keypoints, imgGray, bVis);
         }
         else if (detectorType.compare("HARRIS") == 0)
         {
-            detKeypointsHarris(keypoints, imgGray, false);
+            detKeypointsHarris(keypoints, imgGray, bVis);
         }
         else
         {
-            detKeypointsModern(keypoints, imgGray, detectorType, false);
+            detKeypointsModern(keypoints, imgGray, detectorType, bVis);
         }
         //// EOF STUDENT ASSIGNMENT
 
@@ -103,13 +105,13 @@ int main(int argc, const char *argv[])
         cv::Rect vehicleRect(535, 180, 180, 150);
         if (bFocusOnVehicle)
         {
-            // caution !! If erase element from vector, all the elements behind to erased element pulled one by one
-            for (int i = keypoints.size(); i != 0; i--)
+            vector<cv::KeyPoint> filteredKeypoints;
+            for (auto kp : keypoints)
             {
-                // cout << i << endl;
-                if (!vehicleRect.contains(keypoints[i].pt))
-                    keypoints.erase(keypoints.begin() + i);
+                if (vehicleRect.contains(kp.pt))
+                    filteredKeypoints.push_back(kp);
             }
+            keypoints = filteredKeypoints;
             cout << "Keypoints in vehicle Rect n= " << keypoints.size() << endl;
         }
         // string windowName = "Debug Window";
@@ -122,7 +124,7 @@ int main(int argc, const char *argv[])
         //// EOF STUDENT ASSIGNMENT
 
         // optional : limit number of keypoints (helpful for debugging and learning)
-        bool bLimitKpts = false;
+
         if (bLimitKpts)
         {
             int maxKeypoints = 50;
@@ -132,7 +134,7 @@ int main(int argc, const char *argv[])
                 keypoints.erase(keypoints.begin() + maxKeypoints, keypoints.end());
             }
             cv::KeyPointsFilter::retainBest(keypoints, maxKeypoints);
-            cout << " NOTE: Keypoints have been limited!" << endl;
+            cout << "NOTE: Keypoints have been limited!" << endl;
         }
 
         // push keypoints and descriptor for current frame to end of data buffer
@@ -181,7 +183,7 @@ int main(int argc, const char *argv[])
             cout << "#4 : MATCH KEYPOINT DESCRIPTORS done / match pair size : " << matches.size() << endl;
 
             // visualize matches between current and previous image
-            bVis = true;
+            // bVis = true;
             if (bVis)
             {
                 cv::Mat matchImg = ((dataBuffer.end() - 1)->cameraImg).clone();
@@ -197,7 +199,7 @@ int main(int argc, const char *argv[])
                 cout << "Press key to continue to next image" << endl;
                 cv::waitKey(0); // wait for key to be pressed
             }
-            bVis = false;
+            // bVis = false;
         }
 
     } // eof loop over all images
