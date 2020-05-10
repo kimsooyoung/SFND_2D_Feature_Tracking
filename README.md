@@ -38,6 +38,8 @@ See the classroom instruction and code comments for more details on each of thes
 3. Compile: `cmake .. && make`
 4. Run it: `./2D_feature_tracking`.
 
+===
+
 ## Project-overview
 
 Final goal in this project is to find `keypoints` in every images, and also need to express them in a unique way.
@@ -374,3 +376,8 @@ According to this report,
 ### Todo
 
 try to explore more options and find best of best combination :)
+
+---
+ ### Reference
+* [The KITTI Vision Benchmark Suite](http://www.cvlibs.net/datasets/kitti/setup.php)
+* [Udacity Sensor Fusion Nanodegree](https://www.udacity.com/course/sensor-fusion-engineer-nanodegree--nd313)
